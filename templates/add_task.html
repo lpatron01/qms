@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter une Tâche</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Ajouter une Nouvelle Tâche</h1>
+
+        <!-- Formulaire pour ajouter une tâche -->
+        <form action="{{ url_for('add_task') }}" method="POST" enctype="multipart/form-data">
+            <label for="sujet">Sujet :</label>
+            <input type="text" id="sujet" name="sujet" required>
+
+            <label for="expediteur">Expéditeur :</label>
+            <input type="text" id="expediteur" name="expediteur" required>
+
+            <label for="date">Date de Création :</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="deadline">Deadline :</label>
+            <input type="date" id="deadline" name="deadline" required>
+
+            <label for="pdf_file">Document PDF :</label>
+            <input type="file" id="pdf_file" name="pdf_file" accept=".pdf">
+
+            <button type="submit">Ajouter la Tâche</button>
+        </form>
+
+        <!-- Lien pour retourner à la page d'accueil -->
+        <p><a href="{{ url_for('index') }}">Retour à la page d'accueil</a></p>
+    </div>
+</body>
+</html>

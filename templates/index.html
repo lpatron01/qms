@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord des Tâches</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Tableau de Bord des Tâches</h1>
+
+        <!-- Lien pour ajouter une nouvelle tâche -->
+        <p><a href="{{ url_for('add_task_page') }}">Ajouter une nouvelle tâche</a></p>
+
+        <!-- Barre de recherche -->
+        <input type="text" id="search-bar" placeholder="Rechercher par nom, sujet, date ou expéditeur...">
+
+        <!-- Tableau des tâches -->
+        <table id="tasks-table">
+            <thead>
+                <tr>
+                    <th>Sujet</th>
+                    <th>Expéditeur</th>
+                    <th>Date de Création</th>
+                    <th>Deadline</th>
+                    <th>Document</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.sujet }}</td>
+                    <td>{{ task.expediteur }}</td>
+                    <td>{{ task.date }}</td>
+                    <td>{{ task.deadline }}</td>
+                    <td>
+                        {% if task.pdf_filename %}
+                        <a href="{{ url_for('uploaded_file', filename=task.pdf_filename) }}" target="_blank">Voir le PDF</a>
+                        {% else %}
+                        Aucun document
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Fonction pour filtrer les tâches
+        function filterTasks() {
+            const searchText = document.getElementById("search-bar").value.toLowerCase();
+            fetch(`/search?query=${searchText}`)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector("#tasks-table tbody");
+                    tbody.innerHTML = "";
+
+                    data.forEach(task => {
+                        const row = document.createElement("tr");
+
+                        const sujetCell = document.createElement("td");
+                        sujetCell.textContent = task.sujet;
+
+                        const expediteurCell = document.createElement("td");
+                        expediteurCell.textContent = task.expediteur;
+
+                        const dateCell = document.createElement("td");
+                        dateCell.textContent = task.date;
+
+                        const deadlineCell = document.createElement("td");
+                        deadlineCell.textContent = task.deadline;
+
+                        const pdfCell = document.createElement("td");
+                        if (task.pdf_filename) {
+                            const pdfLink = document.createElement("a");
+                            pdfLink.href = `/uploads/${task.pdf_filename}`;
+                            pdfLink.textContent = "Voir le PDF";
+                            pdfLink.target = "_blank";
+                            pdfCell.appendChild(pdfLink);
+                        } else {
+                            pdfCell.textContent = "Aucun document";
+                        }
+
+                        row.appendChild(sujetCell);
+                        row.appendChild(expediteurCell);
+                        row.appendChild(dateCell);
+                        row.appendChild(deadlineCell);
+                        row.appendChild(pdfCell);
+
+                        tbody.appendChild(row);
+                    });
+                });
+        }
+
+        // Écouter les changements dans la barre de recherche
+        document.getElementById("search-bar").addEventListener("input", filterTasks);
+    </script>
+</body>
+</html>
